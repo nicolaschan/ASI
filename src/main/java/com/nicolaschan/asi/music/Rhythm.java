@@ -4,6 +4,7 @@ import com.nicolaschan.asi.algorithms.Evolvable;
 import com.nicolaschan.asi.algorithms.Genome;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -25,8 +26,10 @@ public class Rhythm implements Evolvable {
     }
     public Rhythm(Genome genome) {
         List<Integer> durations = new ArrayList<>();
-        for (int i = 0; i < genome.getSize(); i++)
-            durations.set(i, genome.getValues()[i]);
+
+        for (int i = 0; i < genome.getSize(); i++) {
+            durations.add(genome.getValues()[i]);
+        }
 
         this.scale = scale;
         this.durations = durations;
@@ -77,4 +80,8 @@ public class Rhythm implements Evolvable {
         return durations.size();
     }
 
+    public String toString() {
+        String out = "R" + this.durations.toString();
+        return out;
+    }
 }

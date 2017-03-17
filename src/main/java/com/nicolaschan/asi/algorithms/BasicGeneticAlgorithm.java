@@ -62,7 +62,7 @@ public class BasicGeneticAlgorithm extends Algorithm {
             insertInEvaluatedList(evaluateds, evaluated);
         }
 
-        int numberOfTopScores = Math.max(2, genomes.length / 10);
+        int numberOfTopScores = Math.max(4,0);
         Genome[] topScores = new Genome[numberOfTopScores];
         for (int i = 0; i < topScores.length; i++) {
             topScores[i] = evaluateds.get(evaluateds.size() - 1 - i).getObject();

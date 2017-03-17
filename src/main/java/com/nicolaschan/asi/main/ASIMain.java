@@ -1,10 +1,7 @@
 package com.nicolaschan.asi.main;
 
 import com.explodingart.jmusic.instrument.SimpleSineInst;
-import com.nicolaschan.asi.algorithms.BasicGeneticAlgorithm;
-import com.nicolaschan.asi.algorithms.Evolvable;
-import com.nicolaschan.asi.algorithms.FitnessFunction;
-import com.nicolaschan.asi.algorithms.Genome;
+import com.nicolaschan.asi.algorithms.*;
 import com.nicolaschan.asi.music.Melody;
 import com.nicolaschan.asi.music.Rhythm;
 import jm.audio.Instrument;
@@ -31,7 +28,26 @@ public class ASIMain {
     public static void evolveRhythm() {
         BasicGeneticAlgorithm alg = new BasicGeneticAlgorithm();
 
-        Genome[] genomes = Genome.generateRandomGenomes(0, 5);
+        int size = 5;
+        Genome[] rhythms = new Genome[size];
+        for (int i = 0; i < rhythms.length; i++) {
+            rhythms[i] = Rhythm.generateRandomRhythm(i, 8).getGenome();
+        }
+        FitnessFunction fitnessFunction = new RhythmFitnessFunction();
+        Genome[] output = alg.evolve(rhythms, fitnessFunction, 5);
+
+        Rhythm[] outputRhythms = new Rhythm[output.length];
+        for (int i = 0; i < output.length; i++) {
+            outputRhythms[i] = new Rhythm(output[i]);
+        }
+
+        System.out.println(Arrays.toString(outputRhythms));
+    }
+
+    public static void evolveRandom() {
+        BasicGeneticAlgorithm alg = new BasicGeneticAlgorithm();
+
+        Genome[] genomes = Genome.generateRandomGenomes(0, 20);
         System.out.println(Arrays.toString(genomes));
 
         FitnessFunction fitnessFunction = new FitnessFunction() {
