@@ -53,6 +53,14 @@ public class Melody {
         return generateRandomPitchesGaussian(seed, count, 2, C4);
     }
 
+    public Rhythm getRhythm() {
+        return rhythm;
+    }
+
+    public int[] getPitches() {
+        return pitches;
+    }
+
     private static int[] generateRandomPitchesGaussian(long seed, int count, int stdev, int startingNote) {
         Random random = new Random(seed);
 
@@ -61,6 +69,7 @@ public class Melody {
         for (int i = 0; i < count; i++) {
             int pitch = currentPitch + (int) random.nextGaussian() * stdev;
             pitches[i] = pitch;
+
             currentPitch = pitch;
         }
 
@@ -68,9 +77,10 @@ public class Melody {
     }
 
     public Note[] getNotes() {
-        Note[] notes = new Note[pitches.length];
+        int numberOfNotes = Math.min(pitches.length, rhythm.getDurations().length);
+        Note[] notes = new Note[numberOfNotes];
 
-        for (int i = 0; i < pitches.length; i++) {
+        for (int i = 0; i < numberOfNotes; i++) {
             notes[i] = new Note(pitches[i], rhythm.getDurations()[i]);
         }
 

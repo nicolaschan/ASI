@@ -7,8 +7,11 @@ import java.util.Arrays;
  */
 public class RhythmFitnessFunction extends WeightedFitnessFunctions {
 
+    public FitnessFunction rhythmVariety;
+    public FitnessFunction preferStrongBeats;
+
     public RhythmFitnessFunction() {
-        WeightedFitnessFunction rhythmVariety = new WeightedFitnessFunction(10, new FitnessFunction() {
+        rhythmVariety = new FitnessFunction() {
             // calculated by adding distances from the median
             @Override
             public float call(Genome genome) {
@@ -25,8 +28,8 @@ public class RhythmFitnessFunction extends WeightedFitnessFunctions {
                 Arrays.sort(numsClone);
                 return numsClone[numsClone.length / 2];
             }
-        });
-        WeightedFitnessFunction preferStrongBeats = new WeightedFitnessFunction(1, new FitnessFunction() {
+        };
+        preferStrongBeats = new FitnessFunction() {
             // assuming numbers are 16th notes
             private int scale = 16;
 
@@ -47,11 +50,13 @@ public class RhythmFitnessFunction extends WeightedFitnessFunctions {
             }
 
             private boolean isStrongBeat(int place) {
-                return (place % (scale * 4)) == 0;
+                return (place % (scale)) == 0;
             }
-        });
+        };
+        WeightedFitnessFunction weightedRhythmVariety = new WeightedFitnessFunction(1, rhythmVariety);
+        WeightedFitnessFunction weightedPreferStrongBeats = new WeightedFitnessFunction(10, preferStrongBeats);
 
-        super.addFunction(rhythmVariety, preferStrongBeats);
+        super.addFunction(weightedPreferStrongBeats, weightedRhythmVariety);
     }
 
 

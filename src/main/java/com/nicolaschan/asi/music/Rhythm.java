@@ -31,7 +31,7 @@ public class Rhythm implements Evolvable {
             durations.add(genome.getValues()[i]);
         }
 
-        this.scale = scale;
+        this.scale = 16;
         this.durations = durations;
     }
 
@@ -81,7 +81,7 @@ public class Rhythm implements Evolvable {
     }
 
     public String toString() {
-        String out = "R" + this.durations.toString();
+        String out = "R" + Arrays.toString(this.getDurations());
         return out;
     }
 }
