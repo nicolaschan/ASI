@@ -4,14 +4,12 @@ import com.explodingart.jmusic.instrument.SimpleSineInst;
 import com.nicolaschan.asi.algorithms.*;
 import com.nicolaschan.asi.music.Melody;
 import com.nicolaschan.asi.music.Rhythm;
-import jm.JMC;
 import jm.audio.Instrument;
 import jm.constants.ProgramChanges;
 import jm.music.data.Note;
 import jm.music.data.Part;
 import jm.music.data.Phrase;
 import jm.music.data.Score;
-import jm.music.tools.ga.PhrGeneticAlgorithm;
 import jm.util.View;
 import jm.util.Write;
 
@@ -20,19 +18,39 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static jm.constants.Durations.QUARTER_NOTE;
-import static jm.constants.Pitches.C4;
-
 /**
  * Created by nicolas on 1/4/17.
  */
 public class ASIMain {
 
     public static void main(String[] args) throws IOException {
-        //createTestMidi();
-        //evolveRhythm();
-        evolvePitches();
-        //randomMelody();
+//        createTestMidi();
+//        evolveRhythm();
+//        evolvePitches();
+        randomMelody();
+//        testing();
+        evolveMelody();
+    }
+
+    public static void testing() {
+        FitnessFunction fitnessFunction = new PitchFitnessFunction().notesInKey;
+        float score = fitnessFunction.call(new Genome(new int[]{60, 72}));
+        System.out.println(score);
+    }
+
+    public static void evolveMelody() {
+        Rhythm[] rhythms = evolveRhythm();
+        int[][] pitches = evolvePitches();
+
+        Melody[] melodies = new Melody[Math.min(rhythms.length, pitches.length)];
+        for (int i = 0; i < melodies.length; i++)
+            melodies[i] = new Melody(rhythms[i], pitches[i]);
+
+        System.out.println(melodies);
+        int index = melodies.length - 200;
+        System.out.println("index: " + index);
+        System.out.println(melodies[index].getRhythm());
+        writeMelody(melodies[index], "melody-" + index, true);
     }
 
     public static void randomMelody() {
@@ -41,7 +59,16 @@ public class ASIMain {
         writeMelody(melody, "Random (seed: " + seed + ")", "random-seed" + seed);
     }
 
+    public static void writeMelody(Melody melody, String name, boolean show) {
+        writeMelody(melody, name, name, show);
+    }
+    public static void writeMelody(Melody melody, String name) {
+        writeMelody(melody, name, name);
+    }
     public static void writeMelody(Melody melody, String name, String fileName) {
+        writeMelody(melody, name, fileName, false);
+    }
+    public static void writeMelody(Melody melody, String name, String fileName, boolean show) {
         Score s = new Score(name);
         Part p = new Part("Piano", ProgramChanges.PIANO, 0);
         Phrase phr = new Phrase("Phrase", 0.0);
@@ -60,11 +87,11 @@ public class ASIMain {
 
         Instrument instrument = new SimpleSineInst(44100);
 
-        View.show(s);
+        if (show) View.show(s);
         Write.au(s, "outputs/" + fileName + ".au", instrument);
     }
 
-    public static void evolveRhythm() {
+    public static Rhythm[] evolveRhythm() {
         BasicGeneticAlgorithm alg = new BasicGeneticAlgorithm();
 
         int size = 5000;
@@ -72,7 +99,7 @@ public class ASIMain {
         for (int i = 0; i < rhythms.length; i++) {
             rhythms[i] = Rhythm.generateRandomRhythm(i, 8).getGenome();
         }
-        FitnessFunction fitnessFunction = new RhythmFitnessFunction().preferStrongBeats;
+        FitnessFunction fitnessFunction = new RhythmFitnessFunction();
 
         Evaluated[] evaluatedRhythms = alg.score(fitnessFunction, rhythms);
         Arrays.sort(evaluatedRhythms);
@@ -98,9 +125,11 @@ public class ASIMain {
         writeMelody(melodyOrig, "Original Rhythm", "original-rhythm");
         Melody melodyEvolved = new Melody(outputRhythms[0], pitchesAllC);
         writeMelody(melodyEvolved, "Evolved Rhythm", "evolved-rhythm");
+
+        return outputRhythms;
     }
 
-    public static void evolvePitches() {
+    public static int[][] evolvePitches() {
         BasicGeneticAlgorithm alg = new BasicGeneticAlgorithm();
 
         int size = 5000;
@@ -141,6 +170,8 @@ public class ASIMain {
         writeMelody(melodyOrig, "Original Pitches", "original-pitches");
         Melody melodyEvolved = new Melody(rhythm, outputPitches[outputPitches.length - 1]);
         writeMelody(melodyEvolved, "Evolved Pitches", "evolved-asymptote-pitches");
+
+        return outputPitches;
     }
 
     public static void evolveRandom() {

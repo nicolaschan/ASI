@@ -9,8 +9,25 @@ public class RhythmFitnessFunction extends WeightedFitnessFunctions {
 
     public FitnessFunction rhythmVariety;
     public FitnessFunction preferStrongBeats;
+    public FitnessFunction preferShorterNotes;
 
     public RhythmFitnessFunction() {
+        preferShorterNotes = new FitnessFunction() {
+
+            @Override
+            public float call(Genome genome) {
+                int score = 0;
+                // for every note, give 2 points for 8th note, 1 point for quarter note
+                for (int val : genome.getValues()) {
+                    if (val == 2)
+                        score += 2;
+                    if (val == 4)
+                        score += 1;
+                }
+
+                return score;
+            }
+        };
         rhythmVariety = new FitnessFunction() {
             // calculated by adding distances from the median
             @Override
@@ -53,10 +70,11 @@ public class RhythmFitnessFunction extends WeightedFitnessFunctions {
                 return (place % (scale)) == 0;
             }
         };
-        WeightedFitnessFunction weightedRhythmVariety = new WeightedFitnessFunction(1, rhythmVariety);
-        WeightedFitnessFunction weightedPreferStrongBeats = new WeightedFitnessFunction(10, preferStrongBeats);
+        //WeightedFitnessFunction weightedRhythmVariety = new WeightedFitnessFunction(10, rhythmVariety);
+        WeightedFitnessFunction weightedPreferStrongBeats = new WeightedFitnessFunction(5, preferStrongBeats);
+        WeightedFitnessFunction weightedPreferShorterNotes = new WeightedFitnessFunction(1, preferShorterNotes);
 
-        super.addFunction(weightedPreferStrongBeats, weightedRhythmVariety);
+        super.addFunction(weightedPreferStrongBeats, /*weightedRhythmVariety,*/ weightedPreferShorterNotes);
     }
 
 

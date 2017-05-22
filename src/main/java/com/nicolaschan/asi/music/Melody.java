@@ -1,5 +1,6 @@
 package com.nicolaschan.asi.music;
 
+import com.nicolaschan.asi.algorithms.Genome;
 import jm.music.data.Note;
 
 import java.util.Random;
@@ -14,7 +15,25 @@ public class Melody {
     private Rhythm rhythm;
     private int[] pitches;
 
+    private static Rhythm removeZeros(Rhythm rhythm) {
+        int[] values = rhythm.getGenome().getValues();
+        int countZeros = 0;
+        for (int val : values)
+            if (val == 0)
+                countZeros++;
+        int[] newValues = new int[values.length - countZeros];
+        int j = 0;
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] != 0) {
+                newValues[j] = values[i];
+                j++;
+            }
+        }
+        return new Rhythm(new Genome(newValues));
+    }
+
     public Melody(Rhythm rhythm, int[] pitches) {
+        rhythm = removeZeros(rhythm);
         this.rhythm = rhythm;
         this.pitches = pitches;
     }

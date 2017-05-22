@@ -26,7 +26,7 @@ public class ToneEvaluator extends Evaluator {
     private boolean noteIsInKey(int note, int key, boolean major) {
         return major ? noteIsInKeyMajor(note, key) : noteIsInKeyNaturalMinor(note, key);
     }
-    private boolean noteIsInKeyMajor(int note, int key) {
+    public boolean noteIsInKeyMajor(int note, int key) {
         // W, W, H, W, W, W, H
         // 0, 2, 1, 2, 2, 2, 1
         // 0, 2, 3, 5, 7, 9, 10
